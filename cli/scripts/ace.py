@@ -409,6 +409,8 @@ def generate_pkey_offsets_query(
     key_columns_order = ", ".join(key_columns)
     key_columns_order_desc = ", ".join(f"{col} DESC" for col in key_columns)
 
+    q='"'
+    
     first_row_selects = ",\n        ".join(
         f"(SELECT {col} FROM first_row) as {col}" for col in key_columns
     )
@@ -422,16 +424,18 @@ def generate_pkey_offsets_query(
     )
 
     range_start_columns = ",\n        ".join(
-        f"{col} as range_start_{col}" for col in key_columns
+        #f"{col} as range_start_{col}" for col in key_columns
+        f"{col} as range_start_{col.replace(q, '')}" for col in key_columns
     )
 
     range_end_columns = ",\n        ".join(
-        f"LEAD({col}) OVER (ORDER BY seq, {key_columns_order}) as range_end_{col}"
-        for col in key_columns
+        #f"LEAD({col}) OVER (ORDER BY seq, {key_columns_order}) as range_end_{col}" for col in key_columns
+        f"LEAD({col}) OVER (ORDER BY seq, {key_columns_order}) as range_end_{col.replace(q, '')}" for col in key_columns
     )
 
     range_output_columns = ",\n    ".join(
-        f"range_start_{col},\n    range_end_{col}" for col in key_columns
+        #f"range_start_{col},\n    range_end_{col}" for col in key_columns
+        f"range_start_{col.replace(q, '')},\n    range_end_{col.replace(q, '')}" for col in key_columns
     )
 
     full_query = sql.SQL(GET_PKEY_OFFSETS).format(
