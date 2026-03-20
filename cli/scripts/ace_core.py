@@ -2155,7 +2155,7 @@ def table_repair_bidirectional(tr_task: TableRepairTask) -> None:
         )
 
         def get_key_tuple(row):
-            return tuple(row[key] for key in keys_list)
+            return tuple(row[key.lower()] for key in keys_list)
 
         node1_dict = {get_key_tuple(row): row for row in node1_rows}
         node2_dict = {get_key_tuple(row): row for row in node2_rows}
